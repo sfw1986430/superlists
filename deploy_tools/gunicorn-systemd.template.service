@@ -1,0 +1,13 @@
+[Unit] 
+Description=Gunicorn server for superlists-127.0.0.1
+
+[Service]
+Restart=on-failure
+User=doubo
+WorkingDirectory= /home/doubo/Desktop/django_mysite/superlists/source
+ExecStart=/home/doubo/.virtualenvs/superlists/bin/gunicorn \
+--bind unix:/tmp/127.0.0.1.socket \
+superlists.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

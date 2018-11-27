@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <!-- Required meta tags -->
+    <meta charset="utf-8">
+{#    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">#}
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+          integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link href="/static/base.css" rel="stylesheet">
+    <title>To-Do lists</title>
+</head>
+
+<body>
+    <div class="container">
+    
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" role="navigation">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Superlists</a>
+                {% if user.email %}
+                    <ul class="nav navbar-nav mr-auto">
+                        <li><a href="{% url 'lists:my_lists' user.email %}">My Lists</a></li>
+                    </ul>
+                    
+                    <ul class="nav list-inline ml-auto">
+                         <li class="list-inline-item pt-0 pr-1">Logged in as {{ user.email }}</li>
+                         <li><a class="list-inline-item" href="{% url 'logout' %}">Log out</a></li>
+                    </ul>
+
+                {% else %}
+                    <form class="form-inline ml-auto"
+                          method="POST"
+                          action="{% url 'send_login_email' %}">
+                        <span>Enter email to log in:</span>
+                        <input class="form-control" name="email" type="text" />
+                        {% csrf_token %}
+                    </form>
+                {% endif %}
+            </div>
+        </nav>
+
+        {% if messages %}
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                {% for message in messages %}
+                    {% if message.level_tag == 'success' %}
+                        <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3 jumbotron">
+                <div class="text-center">
+                    <h1>{% block header_text %}{% endblock %}</h1>
+                    {% block list_form %}
+                        <form method="POST" action="{% block form_action %}{% endblock %}">
+                            {{ form.text}}
+                            {% csrf_token %}
+                            {% if form.errors %}
+                                <div class="form-group is-invalid">
+                                   <div class="form-text">{{ form.text.errors }}</div>
+                                </div>
+                            {% endif %}
+                        </form>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                {% block table %}
+                {% endblock %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                {#向通用视图传递额外的数据，以字典形式存储  #}
+                {% block extra_content %}
+                {% endblock %}
+            </div>
+        </div>
+    
+    </div>
+    <script src="/static/jquery-3.3.1.min.js"></script>
+    <script src="/static/lists.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            window.Superlists.initialize();
+        });
+    </script>
+
+</body>
+</html>

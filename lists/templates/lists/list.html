@@ -1,0 +1,65 @@
+{% extends 'lists/base.html' %}
+
+{% block header_text %}Your To-Do list{% endblock %}
+
+{% block form_action %}{% url 'lists:view_list' list.id %}{% endblock %}
+
+{% block table %}
+    <table id="id_list_table" class="table">
+        {% for item in list.item_set.all %}
+            <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
+        {% endfor %}
+    </table>
+
+    {% if list.owner %}
+        <p>List owner:<span id="id_list_owner">{{ list.owner.email }}</span></p>
+    {% endif %}
+
+{% endblock %}
+
+{% block extra_content %}
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Shared with</h3>
+            <ul>
+                {% for sharee in list.shared_with.all %}
+                    <li class="list-sharee">{{ sharee.email }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Share this list:</h3>
+            <form class="form-inline" method="POST" action="{% url 'lists:share_list' list.id%}">
+            {% csrf_token %}
+            <input name="sharee" placeholder="your-friend@example.com">
+            </form>
+
+            <h3>Shared with</h3>
+            <ul>
+                {% for sharee in list.shared_with.all %}
+                    <li class="list-sharee">{{ sharee.email }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{#<html>#}
+{#  <head>#}
+{#    <title>To-Do lists</title>#}
+{#  </head>#}
+{#  <body>#}
+{#    <h1>Your To-Do list</h1>#}
+{#    <form method="POST" action="/lists/{{ list.id }}/add_item">#}
+{#      <input name="item_text" id="id_new_item" placeholder="Enter a to-do item" />#}
+{#      {% csrf_token %}#}
+{#    </form>#}
+{##}
+{#    <table id="id_list_table">#}
+{#      {% for item in list.item_set.all %}#}
+{#        <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>#}
+{#      {% endfor %}#}
+{#    </table>#}
+{#  </body>#}
+{#</html>#}
